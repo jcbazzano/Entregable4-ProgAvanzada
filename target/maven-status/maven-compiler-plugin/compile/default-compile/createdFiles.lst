@@ -1,0 +1,5 @@
+com\miplaylist\service\PlaylistService.class
+com\miplaylist\model\Playlist.class
+com\miplaylist\service\FileService.class
+com\miplaylist\web\PlaylistServlet.class
+com\miplaylist\model\Video.class
