@@ -14,6 +14,16 @@ public class PlaylistServiceTest {
     @Before
     public void setUp() {
         playlistService = new PlaylistService();
+        // Eliminar todos los videos existentes antes de cada test
+        eliminarTodosLosVideos();
+    }
+    
+    private void eliminarTodosLosVideos() {
+        // Eliminar todos los videos uno por uno
+        while (!playlistService.getPlaylist().getVideos().isEmpty()) {
+            String videoId = playlistService.getPlaylist().getVideos().get(0).getId();
+            playlistService.eliminarVideo(videoId);
+        }
     }
     
     @Test
@@ -54,14 +64,20 @@ public class PlaylistServiceTest {
     
     @Test
     public void testPersistencia() {
-        // Test que verifica que los datos se mantienen entre instancias
-        playlistService.agregarVideo("Video Persistente", "https://youtube.com/watch?v=persist");
-        int videosAntes = playlistService.getPlaylist().getVideos().size();
+        // Este test debe ejecutarse por separado o al final
+        // ya que prueba específicamente la persistencia
+        PlaylistService service1 = new PlaylistService();
+        eliminarTodosLosVideos(); // Limpiar antes del test
         
-        // Simular recreación del servicio (como reiniciar la app)
-        PlaylistService nuevoService = new PlaylistService();
-        int videosDespues = nuevoService.getPlaylist().getVideos().size();
+        service1.agregarVideo("Video Persistente", "https://youtube.com/watch?v=persist");
+        int videosAntes = service1.getPlaylist().getVideos().size();
+        
+        PlaylistService service2 = new PlaylistService();
+        int videosDespues = service2.getPlaylist().getVideos().size();
         
         assertEquals(videosAntes, videosDespues);
+        
+        // Limpiar después del test
+        eliminarTodosLosVideos();
     }
 }

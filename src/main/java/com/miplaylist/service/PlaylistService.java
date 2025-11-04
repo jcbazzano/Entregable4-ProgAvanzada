@@ -17,7 +17,7 @@ public class PlaylistService {
             this.playlist = new Playlist();
         }
     }
-    
+
     public void agregarVideo(String nombre, String link) {
         Video video = new Video(nombre, link);
         playlist.agregarVideo(video);
