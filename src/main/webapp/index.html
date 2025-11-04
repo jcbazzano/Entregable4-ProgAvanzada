@@ -1,100 +1,423 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Playlist Musical</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Vibes Playlist</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .video-card {
-            transition: transform 0.3s;
-            margin-bottom: 20px;
+        :root {
+            --primary: #6366f1;
+            --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --secondary: #f472b6;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --glass: rgba(255, 255, 255, 0.1);
         }
-        .video-card:hover {
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            min-height: 100vh;
+            background-attachment: fixed;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            margin: 2rem 0;
+            border: 1px solid var(--glass);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
         }
-        .favorito {
-            border: 2px solid #ffc107;
+
+        .video-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
         }
+
+        .video-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(99, 102, 241, 0.3);
+            border-color: var(--primary);
+        }
+
+        .video-card.favorito {
+            border: 2px solid #fbbf24;
+            box-shadow: 0 15px 30px rgba(251, 191, 36, 0.3);
+        }
+
         .embed-container {
             position: relative;
             padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
+            border-radius: 15px 15px 0 0;
         }
+
         .embed-container iframe {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            border: none;
+        }
+
+        .btn-glow {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-glow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.6);
+            color: white;
+        }
+
+        .btn-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-like {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .btn-favorite {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+        }
+
+        .btn-icon:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .stats-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .toast {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass);
+            border-radius: 15px;
+        }
+
+        .music-wave {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: 30px;
+        }
+
+        .music-wave span {
+            display: block;
+            width: 3px;
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: 3px;
+            animation: musicWave 1.2s ease-in-out infinite;
+        }
+
+        .music-wave span:nth-child(2) { animation-delay: 0.1s; }
+        .music-wave span:nth-child(3) { animation-delay: 0.2s; }
+        .music-wave span:nth-child(4) { animation-delay: 0.3s; }
+        .music-wave span:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes musicWave {
+            0%, 100% { transform: scaleY(0.3); }
+            50% { transform: scaleY(1); }
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1) rotate(90deg);
         }
     </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <h1 class="text-center mb-4">🎵 Mi Playlist Musical</h1>
-        
-        <!-- Formulario para agregar videos -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Agregar Nuevo Video</h5>
-                <form id="agregarForm">
-                    <div class="row">
-                        <div class="col-md-5">
-                            <input type="text" class="form-control" name="nombre" placeholder="Nombre del video" required>
-                        </div>
-                        <div class="col-md-5">
-                            <input type="url" class="form-control" name="link" placeholder="URL de YouTube" required>
-                        </div>
-                        <div class="col-md-2">
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="fas fa-plus"></i> Agregar
-                            </button>
-                        </div>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-music me-2"></i>Vibes Playlist
+            </a>
+            <div class="music-wave">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="container">
+        <div class="hero-section text-center">
+            <h1 class="display-4 fw-bold mb-3">🎧 Tu Música, Tu Estilo</h1>
+            <p class="lead mb-4">Crea la playlist perfecta con tus videos favoritos de YouTube</p>
+            
+            <!-- Stats -->
+            <div class="row justify-content-center mb-4">
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="stat-number" id="totalVideos">0</div>
+                        <small>Total Videos</small>
                     </div>
-                </form>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="stat-number" id="totalLikes">0</div>
+                        <small>Total Likes</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="stat-number" id="totalFavorites">0</div>
+                        <small>Favoritos</small>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Lista de videos -->
+        <!-- Add Video Form -->
+        <div class="form-card">
+            <h4 class="mb-4"><i class="fas fa-plus-circle me-2"></i>Agregar Nuevo Video</h4>
+            <form id="agregarForm">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <input type="text" class="form-control form-control-lg" name="nombre" 
+                               placeholder="🎵 Nombre del video" required
+                               style="background: rgba(255,255,255,0.1); border: 1px solid var(--glass); color: white;">
+                    </div>
+                    <div class="col-md-5">
+                        <input type="url" class="form-control form-control-lg" name="link" 
+                               placeholder="🔗 URL de YouTube" required
+                               style="background: rgba(255,255,255,0.1); border: 1px solid var(--glass); color: white;">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-glow w-100">
+                            <i class="fas fa-plus me-2"></i>Agregar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Videos Grid -->
         <div id="videosContainer" class="row">
-            <div class="col-12">
-                <p class="text-center text-muted">Cargando videos...</p>
+            <div class="col-12 text-center">
+                <div class="p-5">
+                    <div class="loading mx-auto mb-3"></div>
+                    <p class="text-muted">Cargando tu música...</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Floating Action Button -->
+    <button class="floating-btn" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Toasts Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        console.log('Iniciando aplicación...');
+        // Configuración inicial
+        console.log('🎵 Vibes Playlist iniciando...');
 
         // Cargar videos al iniciar
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM cargado, iniciando carga de videos...');
+            console.log('🚀 DOM cargado, iniciando aplicación...');
             cargarVideos();
         });
 
-        function cargarVideos() {
-            console.log('Solicitando videos al servidor...');
+        // Función para mostrar notificaciones aesthetic
+        function showToast(message, type = 'info') {
+            const toastContainer = document.querySelector('.toast-container');
+            const toastId = 'toast-' + Date.now();
             
+            const toastHTML = `
+                <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0" role="alert">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="fas fa-${getToastIcon(type)} me-2"></i>${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+            
+            // Auto-remove después de mostrar
+            toastElement.addEventListener('hidden.bs.toast', () => {
+                toastElement.remove();
+            });
+        }
+
+        function getToastIcon(type) {
+            const icons = {
+                'success': 'check-circle',
+                'danger': 'exclamation-triangle',
+                'info': 'info-circle',
+                'warning': 'exclamation-circle'
+            };
+            return icons[type] || 'info-circle';
+        }
+
+        // Cargar y mostrar videos
+        function cargarVideos() {
             fetch('/miplaylist/playlist')
-                .then(response => {
-                    console.log('Respuesta recibida:', response.status);
-                    if (!response.ok) {
-                        throw new Error('Error HTTP: ' + response.status);
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(videos => {
-                    console.log('Videos recibidos:', videos);
+                    console.log('📀 Videos cargados:', videos);
                     mostrarVideos(videos);
+                    actualizarEstadisticas(videos);
                 })
                 .catch(error => {
-                    console.error('Error cargando videos:', error);
-                    document.getElementById('videosContainer').innerHTML = 
-                        '<div class="col-12"><p class="text-center text-danger">Error cargando videos</p></div>';
+                    console.error('❌ Error cargando videos:', error);
+                    showToast('Error cargando videos', 'danger');
                 });
         }
 
@@ -102,7 +425,15 @@
             const container = document.getElementById('videosContainer');
             
             if (!videos || videos.length === 0) {
-                container.innerHTML = '<div class="col-12"><p class="text-center text-muted">No hay videos en la playlist</p></div>';
+                container.innerHTML = `
+                    <div class="col-12 text-center">
+                        <div class="p-5">
+                            <i class="fas fa-music fa-3x mb-3 text-muted"></i>
+                            <h5 class="text-muted">Tu playlist está vacía</h5>
+                            <p class="text-muted">¡Agrega tu primer video para comenzar!</p>
+                        </div>
+                    </div>
+                `;
                 return;
             }
             
@@ -110,12 +441,10 @@
             
             videos.forEach(video => {
                 const embedUrl = obtenerEmbedUrl(video.link);
-                console.log('Procesando video:', video.nombre, 'Embed URL:', embedUrl);
-                
                 const col = document.createElement('div');
-                col.className = 'col-md-6 col-lg-4';
+                col.className = 'col-xl-4 col-lg-6 col-md-6';
                 col.innerHTML = `
-                    <div class="card video-card ${video.favorito ? 'favorito' : ''}">
+                    <div class="video-card ${video.favorito ? 'favorito' : ''}">
                         <div class="embed-container">
                             <iframe src="${embedUrl}" 
                                     frameborder="0" 
@@ -123,25 +452,28 @@
                                     allowfullscreen>
                             </iframe>
                         </div>
-                        <div class="card-body">
-                            <h5 class="card-title">${video.nombre}</h5>
+                        <div class="card-body p-4">
+                            <h5 class="card-title mb-3">${video.nombre}</h5>
                             <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <button class="btn btn-sm ${video.favorito ? 'btn-warning' : 'btn-outline-warning'}" 
-                                            onclick="toggleFavorito('${video.id}')">
-                                        <i class="fas fa-star"></i>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-favorite btn-icon ${video.favorito ? 'pulse' : ''}" 
+                                            onclick="toggleFavorito('${video.id}')"
+                                            title="${video.favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}">
+                                        <i class="fas fa-star ${video.favorito ? 'text-warning' : 'text-white'}"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-outline-danger ms-1" 
-                                            onclick="eliminarVideo('${video.id}')">
+                                    <button class="btn btn-delete btn-icon" 
+                                            onclick="eliminarVideo('${video.id}')"
+                                            title="Eliminar video">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
-                                <div>
-                                    <span class="badge bg-primary me-2">
-                                        <i class="fas fa-heart"></i> ${video.likes}
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="badge bg-primary px-3 py-2">
+                                        <i class="fas fa-heart me-1"></i> ${video.likes}
                                     </span>
-                                    <button class="btn btn-sm btn-outline-primary" 
-                                            onclick="darLike('${video.id}')">
+                                    <button class="btn btn-like btn-icon" 
+                                            onclick="darLike('${video.id}')"
+                                            title="Dar like">
                                         <i class="fas fa-thumbs-up"></i>
                                     </button>
                                 </div>
@@ -151,6 +483,16 @@
                 `;
                 container.appendChild(col);
             });
+        }
+
+        function actualizarEstadisticas(videos) {
+            const totalVideos = videos.length;
+            const totalLikes = videos.reduce((sum, video) => sum + video.likes, 0);
+            const totalFavorites = videos.filter(video => video.favorito).length;
+            
+            document.getElementById('totalVideos').textContent = totalVideos;
+            document.getElementById('totalLikes').textContent = totalLikes;
+            document.getElementById('totalFavorites').textContent = totalFavorites;
         }
 
         function obtenerEmbedUrl(link) {
@@ -166,102 +508,139 @@
             return link;
         }
 
-        // Agregar video
+        // Funciones CRUD
         document.getElementById('agregarForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            console.log('Enviando formulario...');
             
-            const formData = new FormData(this);
-            const nombre = formData.get('nombre');
-            const link = formData.get('link');
-            
-            console.log('Datos del formulario:', { nombre, link });
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<div class="loading"></div>';
+            submitBtn.disabled = true;
 
+            const formData = new FormData(this);
+            
             fetch('/miplaylist/playlist?action=agregar', {
                 method: 'POST',
                 body: new URLSearchParams(formData)
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Respuesta del servidor:', data);
                 if (data.success) {
                     this.reset();
                     cargarVideos();
-                    alert('✅ Video agregado correctamente!');
+                    showToast('🎉 Video agregado correctamente!', 'success');
                 } else {
-                    alert('❌ Error: ' + data.message);
+                    showToast('❌ Error: ' + data.message, 'danger');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('❌ Error al agregar video');
+                showToast('❌ Error al agregar video', 'danger');
+            })
+            .finally(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
             });
         });
 
         function eliminarVideo(id) {
-            console.log('Eliminando video:', id);
             if (confirm('¿Estás seguro de eliminar este video?')) {
                 fetch('/miplaylist/playlist?action=eliminar&id=' + id, {
                     method: 'POST'
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Respuesta eliminación:', data);
                     if (data.success) {
                         cargarVideos();
-                        alert('✅ Video eliminado correctamente!');
+                        showToast('🗑️ Video eliminado', 'info');
                     } else {
-                        alert('❌ Error al eliminar video');
+                        showToast('❌ Error al eliminar video', 'danger');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('❌ Error al eliminar video');
+                    showToast('❌ Error al eliminar video', 'danger');
                 });
             }
         }
 
         function darLike(id) {
-            console.log('Dando like a video:', id);
             fetch('/miplaylist/playlist?action=like&id=' + id, {
                 method: 'POST'
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Respuesta like:', data);
                 if (data.success) {
                     cargarVideos();
+                    showToast('👍 Like agregado!', 'success');
                 } else {
-                    alert('❌ Error al dar like');
+                    showToast('❌ Error al dar like', 'danger');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('❌ Error al dar like');
+                showToast('❌ Error al dar like', 'danger');
             });
         }
 
         function toggleFavorito(id) {
-            console.log('Toggle favorito video:', id);
             fetch('/miplaylist/playlist?action=favorito&id=' + id, {
                 method: 'POST'
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Respuesta favorito:', data);
                 if (data.success) {
                     cargarVideos();
                 } else {
-                    alert('❌ Error al marcar como favorito');
+                    showToast('❌ Error al marcar como favorito', 'danger');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('❌ Error al marcar como favorito');
+                showToast('❌ Error al marcar como favorito', 'danger');
             });
         }
 
-        console.log('JavaScript cargado correctamente');
+        // Utilidades
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Efectos de partículas (bonus aesthetic)
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.style.cssText = `
+                position: fixed;
+                width: 4px;
+                height: 4px;
+                background: var(--primary);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: -1;
+            `;
+            document.body.appendChild(particle);
+            
+            const startX = Math.random() * window.innerWidth;
+            const startY = window.innerHeight + 10;
+            
+            particle.style.left = startX + 'px';
+            particle.style.top = startY + 'px';
+            
+            const animation = particle.animate([
+                { transform: `translateY(0)`, opacity: 1 },
+                { transform: `translateY(-${window.innerHeight + 100}px)`, opacity: 0 }
+            ], {
+                duration: Math.random() * 3000 + 2000,
+                easing: 'cubic-bezier(0.1, 0.2, 0.8, 0.9)'
+            });
+            
+            animation.onfinish = () => particle.remove();
+        }
+
+        // Crear partículas cada 500ms
+        setInterval(createParticle, 500);
+
+        console.log('✨ Aesthetic mode activado!');
     </script>
 </body>
 </html>
