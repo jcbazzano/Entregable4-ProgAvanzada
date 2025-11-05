@@ -6,16 +6,10 @@ import com.miplaylist.model.Video;
 public class PlaylistService {
     private Playlist playlist;
     private final PersistenceService persistenceService;
-    private static final String DATA_FILE = "playlist_data.json";
     
     public PlaylistService() {
         this.persistenceService = new PersistenceService();
         this.playlist = persistenceService.cargarPlaylist();
-        
-        // Si no hay datos previos, crear playlist vacía
-        if (this.playlist == null) {
-            this.playlist = new Playlist();
-        }
     }
 
     public void agregarVideo(String nombre, String link) {
