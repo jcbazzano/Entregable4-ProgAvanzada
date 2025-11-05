@@ -1,6 +1,6 @@
 @echo off
 echo ========================================
-echo 🚀 DEPLOYMENT - TOMCAT PUERTO 8081
+echo 🚀 DEPLOYMENT - RUTA CORRECTA
 echo ========================================
 
 echo 1. 🛑 Deteniendo Tomcat...
@@ -8,13 +8,13 @@ net stop Tomcat9
 echo ✅ Tomcat detenido
 
 echo 2. 📁 Limpiando despliegue anterior...
-del "C:\tomcat9\webapps\miplaylist.war" 2>nul
-rmdir /s /q "C:\tomcat9\webapps\miplaylist" 2>nul
+del "C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\miplaylist.war" 2>nul
+rmdir /s /q "C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\miplaylist" 2>nul
 echo ✅ Limpieza completada
 
 echo 3. 📦 Copiando nuevo WAR...
 if exist "target\miplaylist.war" (
-    xcopy /Y "target\miplaylist.war" "C:\tomcat9\webapps\"
+    xcopy /Y "target\miplaylist.war" "C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\"
     echo ✅ WAR copiado correctamente
 ) else (
     echo ❌ ERROR: No se encontró target\miplaylist.war
