@@ -26,7 +26,7 @@ net start Tomcat9
 echo ✅ Tomcat iniciado
 
 echo 5. ⏳ Esperando 10 segundos para despliegue...
-timeout /t 10 /nobreak >nul
+ping -n 10 127.0.0.1 >nul
 
 echo.
 echo ========================================
