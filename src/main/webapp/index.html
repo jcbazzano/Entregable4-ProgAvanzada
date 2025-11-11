@@ -78,6 +78,8 @@
     <div class="toast-container position-fixed top-0 end-0 p-3"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        const STORAGE_KEY = 'miPlaylistVideos';
+
         document.addEventListener('DOMContentLoaded', function() {
             cargarVideos();
         });
@@ -115,15 +117,17 @@
             return icons[type] || 'info-circle';
         }
         function cargarVideos() {
-            fetch('playlist.php')
-                .then(response => response.json())
-                .then(videos => {
-                    mostrarVideos(videos);
-                    actualizarEstadisticas(videos);
-                })
-                .catch(error => {
-                    showToast('Error cargando videos', 'danger');
-                });
+            try {
+                const videos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                mostrarVideos(videos);
+                actualizarEstadisticas(videos);
+            } catch (error) {
+                showToast('Error cargando videos', 'danger');
+            }
+        }
+
+        function guardarVideos(videos) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(videos));
         }
 
         function mostrarVideos(videos) {
@@ -212,6 +216,7 @@
             }
             return link;
         }
+
         document.getElementById('agregarForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -221,87 +226,90 @@
             submitBtn.disabled = true;
 
             const formData = new FormData(this);
-            
-            fetch('playlist.php?action=agregar', {
-                method: 'POST',
-                body: new URLSearchParams(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
+            const nombre = formData.get('nombre');
+            const link = formData.get('link');
+        
+            setTimeout(() => {
+                try {
+                    const videos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    const nuevoVideo = {
+                        id: 'video_' + Date.now(),
+                        nombre: nombre,
+                        link: link,
+                        likes: 0,
+                        favorito: false
+                    };
+                    
+                    videos.push(nuevoVideo);
+                    guardarVideos(videos);
+                    
                     this.reset();
                     cargarVideos();
                     showToast('Video agregado correctamente!', 'success');
-                } else {
-                    showToast('Error: ' + data.message, 'danger');
+                } catch (error) {
+                    showToast('Error al agregar video', 'danger');
+                } finally {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('Error al agregar video', 'danger');
-            })
-            .finally(() => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            });
+            }, 500);
         });
 
         function eliminarVideo(id) {
             if (confirm('¿Estás seguro de eliminar este video?')) {
-                fetch('playlist.php?action=eliminar&id=' + id, {
-                    method: 'POST'
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
+                try {
+                    const videos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    const videoIndex = videos.findIndex(video => video.id === id);
+                    
+                    if (videoIndex !== -1) {
+                        videos.splice(videoIndex, 1);
+                        guardarVideos(videos);
                         cargarVideos();
                         showToast('Video eliminado', 'info');
                     } else {
-                        showToast('Error al eliminar video', 'danger');
+                        showToast('Video no encontrado', 'danger');
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
+                } catch (error) {
                     showToast('Error al eliminar video', 'danger');
-                });
+                }
             }
         }
 
         function darLike(id) {
-            fetch('playlist.php?action=like&id=' + id, {
-                method: 'POST'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
+            try {
+                const videos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                const video = videos.find(v => v.id === id);
+                
+                if (video) {
+                    video.likes++;
+                    guardarVideos(videos);
                     cargarVideos();
                     showToast('Like agregado!', 'success');
                 } else {
-                    showToast('Error al dar like', 'danger');
+                    showToast('Video no encontrado', 'danger');
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+            } catch (error) {
                 showToast('Error al dar like', 'danger');
-            });
+            }
         }
 
         function toggleFavorito(id) {
-            fetch('playlist.php?action=favorito&id=' + id, {
-                method: 'POST'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
+            try {
+                const videos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                const video = videos.find(v => v.id === id);
+                
+                if (video) {
+                    video.favorito = !video.favorito;
+                    guardarVideos(videos);
                     cargarVideos();
                 } else {
-                    showToast('Error al marcar como favorito', 'danger');
+                    showToast('Video no encontrado', 'danger');
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 showToast('Error al marcar como favorito', 'danger');
-            });
+            }
         }
+
         function createParticle() {
             const particle = document.createElement('div');
             particle.style.cssText = `
