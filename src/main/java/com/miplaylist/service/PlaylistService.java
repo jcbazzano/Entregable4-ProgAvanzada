@@ -4,7 +4,7 @@ import com.miplaylist.model.Playlist;
 import com.miplaylist.model.Video;
 
 public class PlaylistService {
-    private Playlist playlist;
+    private final Playlist playlist;
     private final PersistenceService persistenceService;
     
     public PlaylistService() {

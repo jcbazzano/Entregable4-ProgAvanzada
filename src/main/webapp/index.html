@@ -115,7 +115,7 @@
             return icons[type] || 'info-circle';
         }
         function cargarVideos() {
-            fetch('/miplaylist/playlist')
+            fetch('playlist.php')
                 .then(response => response.json())
                 .then(videos => {
                     mostrarVideos(videos);
@@ -222,7 +222,7 @@
 
             const formData = new FormData(this);
             
-            fetch('/miplaylist/playlist?action=agregar', {
+            fetch('playlist.php?action=agregar', {
                 method: 'POST',
                 body: new URLSearchParams(formData)
             })
@@ -248,7 +248,7 @@
 
         function eliminarVideo(id) {
             if (confirm('¿Estás seguro de eliminar este video?')) {
-                fetch('/miplaylist/playlist?action=eliminar&id=' + id, {
+                fetch('playlist.php?action=eliminar&id=' + id, {
                     method: 'POST'
                 })
                 .then(response => response.json())
@@ -268,7 +268,7 @@
         }
 
         function darLike(id) {
-            fetch('/miplaylist/playlist?action=like&id=' + id, {
+            fetch('playlist.php?action=like&id=' + id, {
                 method: 'POST'
             })
             .then(response => response.json())
@@ -287,7 +287,7 @@
         }
 
         function toggleFavorito(id) {
-            fetch('/miplaylist/playlist?action=favorito&id=' + id, {
+            fetch('playlist.php?action=favorito&id=' + id, {
                 method: 'POST'
             })
             .then(response => response.json())

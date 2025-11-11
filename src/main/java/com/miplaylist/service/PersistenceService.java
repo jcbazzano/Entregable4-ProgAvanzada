@@ -9,8 +9,6 @@ import com.miplaylist.model.Playlist;
 public class PersistenceService {
     private final FileService fileService;
     private final ObjectMapper mapper;
-    
-    // ✅ RUTA ABSOLETA FUERA DE TOMCAT
     private static final String DATA_DIR = "C:/data-miplaylist/";
     private static final String DATA_FILE = DATA_DIR + "playlist_data.json";
     
