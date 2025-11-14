@@ -64,10 +64,8 @@ public class PlaylistServiceTest {
     
     @Test
     public void testPersistencia() {
-        // Este test debe ejecutarse por separado o al final
-        // ya que prueba específicamente la persistencia
         PlaylistService service1 = new PlaylistService();
-        eliminarTodosLosVideos(); // Limpiar antes del test
+        eliminarTodosLosVideos(); 
         
         service1.agregarVideo("Video Persistente", "https://youtube.com/watch?v=persist");
         int videosAntes = service1.getPlaylist().getVideos().size();
@@ -76,8 +74,7 @@ public class PlaylistServiceTest {
         int videosDespues = service2.getPlaylist().getVideos().size();
         
         assertEquals(videosAntes, videosDespues);
-        
-        // Limpiar después del test
+
         eliminarTodosLosVideos();
     }
 }
