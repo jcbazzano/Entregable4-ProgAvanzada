@@ -82,9 +82,6 @@
         cargarVideos();
     });
 
-    // =============================
-    //      TOASTS
-    // =============================
     function showToast(message, type = 'info') {
         const toastContainer = document.querySelector('.toast-container');
         const toastId = 'toast-' + Date.now();
@@ -116,15 +113,11 @@
         return icons[type] || 'info-circle';
     }
 
-    // =============================
-    //      CARGAR DESDE BACKEND
-    // =============================
     async function cargarVideos() {
         try {
             const response = await fetch("playlist");
             const data = await response.json();
 
-            // data ES un array directo (tu servlet ya devuelve la lista)
             mostrarVideos(data);
             actualizarEstadisticas(data);
 
@@ -133,9 +126,6 @@
         }
     }
 
-    // =============================
-    //      MOSTRAR VIDEOS
-    // =============================
     function mostrarVideos(videos) {
         const container = document.getElementById('videosContainer');
         
@@ -194,18 +184,12 @@
         });
     }
 
-    // =============================
-    //      ESTADÍSTICAS
-    // =============================
     function actualizarEstadisticas(videos) {
         document.getElementById('totalVideos').textContent = videos.length;
         document.getElementById('totalLikes').textContent = videos.reduce((a, v) => a + v.likes, 0);
         document.getElementById('totalFavorites').textContent = videos.filter(v => v.favorito).length;
     }
 
-    // =============================
-    //      OBTENER EMBED
-    // =============================
     function obtenerEmbedUrl(link) {
         if (!link) return '';
         
@@ -219,9 +203,6 @@
         return link;
     }
 
-    // =============================
-    //      AGREGAR VIDEO
-    // =============================
     document.getElementById('agregarForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
@@ -266,9 +247,6 @@
         }
     }
 
-    // =============================
-    //      DAR LIKE
-    // =============================
     async function darLike(id) {
         try {
             const response = await fetch(`playlist?action=like&id=${id}`, {
@@ -286,9 +264,6 @@
         }
     }
 
-    // =============================
-    //      FAVORITO
-    // =============================
     async function toggleFavorito(id) {
         try {
             const response = await fetch(`playlist?action=favorito&id=${id}`, {
