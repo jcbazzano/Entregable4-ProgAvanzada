@@ -21,7 +21,7 @@ public class PersistenceService {
     private void crearDirectorioDatos() {
         try {
             java.nio.file.Files.createDirectories(Paths.get(DATA_DIR));
-            System.out.println("📁 Directorio de datos creado: " + DATA_DIR);
+            System.out.println("📁 Directorio de datos creado/existente: " + DATA_DIR);
         } catch (IOException e) {
             System.err.println("❌ Error creando directorio: " + e.getMessage());
         }
@@ -40,16 +40,20 @@ public class PersistenceService {
     public Playlist cargarPlaylist() {
         try {
             String json = fileService.cargarArchivo(DATA_FILE);
-            if (json != null && !json.isEmpty()) {
-                Playlist playlist = mapper.readValue(json, Playlist.class);
-                System.out.println("📀 Playlist cargada desde: " + DATA_FILE);
-                System.out.println("🎬 Videos cargados: " + playlist.getVideos().size());
-                return playlist;
+            if (json == null || json.isBlank()) {
+                System.out.println("🆕 No hay archivo o está vacío, creando nueva playlist");
+                return new Playlist();
             }
+            
+            Playlist playlist = mapper.readValue(json, Playlist.class);
+            int size = playlist.getVideos() == null ? 0 : playlist.getVideos().size();
+            System.out.println("📀 Playlist cargada desde: " + DATA_FILE);
+            System.out.println("🎬 Videos cargados: " + size);
+            return playlist;
+            
         } catch (IOException e) {
-            System.err.println("❌ Error cargando playlist: " + e.getMessage());
+            System.err.println("❌ Error cargando playlist, se usará una vacía: " + e.getMessage());
+            return new Playlist();   // importante: NO guardamos nada acá
         }
-        System.out.println("🆕 No hay datos previos, creando nueva playlist");
-        return new Playlist();
     }
 }

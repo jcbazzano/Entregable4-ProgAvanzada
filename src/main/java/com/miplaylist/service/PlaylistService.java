@@ -9,7 +9,12 @@ public class PlaylistService {
     
     public PlaylistService() {
         this.persistenceService = new PersistenceService();
-        this.playlist = persistenceService.cargarPlaylist();
+        
+        Playlist cargada = persistenceService.cargarPlaylist();
+        if (cargada == null) {
+            cargada = new Playlist();
+        }
+        this.playlist = cargada;
     }
 
     public void agregarVideo(String nombre, String link) {
