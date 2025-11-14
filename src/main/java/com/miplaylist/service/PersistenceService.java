@@ -9,8 +9,6 @@ import com.miplaylist.model.Playlist;
 public class PersistenceService {
     private final FileService fileService;
     private final ObjectMapper mapper;
-
-    // ahora son de instancia, no static
     private final String dataDir;
     private final String dataFile;
     
@@ -18,10 +16,7 @@ public class PersistenceService {
         this.fileService = new FileService();
         this.mapper = new ObjectMapper();
 
-        // Lee la ruta desde una system property, con default
         String dir = System.getProperty("playlist.data.dir", "C:/data-miplaylist/");
-        
-        // Aseguramos que termine en / o \
         if (!dir.endsWith("/") && !dir.endsWith("\\")) {
             dir = dir + "/";
         }
@@ -35,9 +30,9 @@ public class PersistenceService {
     private void crearDirectorioDatos() {
         try {
             java.nio.file.Files.createDirectories(Paths.get(dataDir));
-            System.out.println("📁 Directorio de datos (playlist): " + dataDir);
+            System.out.println("Directorio de datos (playlist): " + dataDir);
         } catch (IOException e) {
-            System.err.println("❌ Error creando directorio: " + e.getMessage());
+            System.err.println("Error creando directorio: " + e.getMessage());
         }
     }
     
@@ -45,9 +40,9 @@ public class PersistenceService {
         try {
             String json = mapper.writeValueAsString(playlist);
             fileService.guardarArchivo(dataFile, json);
-            System.out.println("💾 Playlist guardada en: " + dataFile);
+            System.out.println("Playlist guardada en: " + dataFile);
         } catch (IOException e) {
-            System.err.println("❌ Error guardando playlist: " + e.getMessage());
+            System.err.println("Error guardando playlist: " + e.getMessage());
         }
     }
     
@@ -55,19 +50,19 @@ public class PersistenceService {
         try {
             String json = fileService.cargarArchivo(dataFile);
             if (json == null || json.isBlank()) {
-                System.out.println("🆕 No hay archivo o está vacío, creando nueva playlist");
+                System.out.println("No hay archivo o está vacío, creando nueva playlist");
                 return new Playlist();
             }
             
             Playlist playlist = mapper.readValue(json, Playlist.class);
             int size = playlist.getVideos() == null ? 0 : playlist.getVideos().size();
-            System.out.println("📀 Playlist cargada desde: " + dataFile);
-            System.out.println("🎬 Videos cargados: " + size);
+            System.out.println("Playlist cargada desde: " + dataFile);
+            System.out.println("Videos cargados: " + size);
             return playlist;
             
         } catch (IOException e) {
-            System.err.println("❌ Error cargando playlist, se usará una vacía: " + e.getMessage());
-            return new Playlist();   // importante: no pisamos el archivo acá
+            System.err.println("Error cargando playlist, se usará una vacía: " + e.getMessage());
+            return new Playlist();  
         }
     }
 }

@@ -20,7 +20,6 @@ public class PlaylistServiceTest {
     }
     
     private void eliminarTodosLosVideos() {
-        // Eliminar todos los videos uno por uno
         while (!playlistService.getPlaylist().getVideos().isEmpty()) {
             String videoId = playlistService.getPlaylist().getVideos().get(0).getId();
             playlistService.eliminarVideo(videoId);
@@ -65,7 +64,6 @@ public class PlaylistServiceTest {
     
     @Test
     public void testPersistencia() {
-        // service1 y service2 usan el MISMO data-dir de test
         PlaylistService service1 = new PlaylistService();
         eliminarTodosLosVideos(); 
         
