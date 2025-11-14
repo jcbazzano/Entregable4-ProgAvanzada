@@ -78,306 +78,233 @@
     <div class="toast-container position-fixed top-0 end-0 p-3"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const DATA_FILE = 'playlist_data.json';
+    document.addEventListener('DOMContentLoaded', function() {
+        cargarVideos();
+    });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            cargarVideos();
-        });
+    // =============================
+    //      TOASTS
+    // =============================
+    function showToast(message, type = 'info') {
+        const toastContainer = document.querySelector('.toast-container');
+        const toastId = 'toast-' + Date.now();
+        
+        const toastHTML = `
+            <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-${getToastIcon(type)} me-2"></i>${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        `;
+        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+        const toastElement = document.getElementById(toastId);
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+        toastElement.addEventListener('hidden.bs.toast', () => toastElement.remove());
+    }
 
-        function showToast(message, type = 'info') {
-            const toastContainer = document.querySelector('.toast-container');
-            const toastId = 'toast-' + Date.now();
-            
-            const toastHTML = `
-                <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0" role="alert">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            <i class="fas fa-${getToastIcon(type)} me-2"></i>${message}
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    function getToastIcon(type) {
+        const icons = {
+            'success': 'check-circle',
+            'danger': 'exclamation-triangle',
+            'info': 'info-circle',
+            'warning': 'exclamation-circle'
+        };
+        return icons[type] || 'info-circle';
+    }
+
+    // =============================
+    //      CARGAR DESDE BACKEND
+    // =============================
+    async function cargarVideos() {
+        try {
+            const response = await fetch("/playlist");
+            const data = await response.json();
+
+            // data ES un array directo (tu servlet ya devuelve la lista)
+            mostrarVideos(data);
+            actualizarEstadisticas(data);
+
+        } catch (error) {
+            showToast('Error cargando videos del servidor', 'danger');
+        }
+    }
+
+    // =============================
+    //      MOSTRAR VIDEOS
+    // =============================
+    function mostrarVideos(videos) {
+        const container = document.getElementById('videosContainer');
+        
+        if (!videos || videos.length === 0) {
+            container.innerHTML = `
+                <div class="col-12 text-center">
+                    <div class="p-5">
+                        <i class="fas fa-music fa-3x mb-3 text-muted"></i>
+                        <h5 class="text-muted">Tu playlist está vacía</h5>
+                        <p class="text-muted">¡Agrega tu primer video para comenzar!</p>
                     </div>
                 </div>
             `;
-            toastContainer.insertAdjacentHTML('beforeend', toastHTML);
-            const toastElement = document.getElementById(toastId);
-            const toast = new bootstrap.Toast(toastElement);
-            toast.show();
-            toastElement.addEventListener('hidden.bs.toast', () => {
-                toastElement.remove();
-            });
+            return;
         }
-
-        function getToastIcon(type) {
-            const icons = {
-                'success': 'check-circle',
-                'danger': 'exclamation-triangle',
-                'info': 'info-circle',
-                'warning': 'exclamation-circle'
-            };
-            return icons[type] || 'info-circle';
-        }
-
-        // BACKEND CON ARCHIVO JSON
-        async function cargarVideos() {
-            try {
-                const response = await fetch(DATA_FILE);
-                const data = await response.json();
-                mostrarVideos(data.videos || []);
-                actualizarEstadisticas(data.videos || []);
-            } catch (error) {
-                showToast('Error cargando videos', 'danger');
-                // Si el archivo no existe, mostrar lista vacía
-                mostrarVideos([]);
-                actualizarEstadisticas([]);
-            }
-        }
-
-        async function guardarVideos(videos) {
-            // En un entorno real, aquí harías un fetch POST al backend
-            // Pero como no tenemos backend, mostramos un mensaje
-            console.log('Guardando videos:', videos);
-            showToast('Los cambios se perderán al recargar (sin backend)', 'warning');
-            
-            // Para desarrollo: guardar en localStorage como backup
-            localStorage.setItem('miPlaylist_backup', JSON.stringify(videos));
-        }
-
-        function mostrarVideos(videos) {
-            const container = document.getElementById('videosContainer');
-            
-            if (!videos || videos.length === 0) {
-                container.innerHTML = `
-                    <div class="col-12 text-center">
-                        <div class="p-5">
-                            <i class="fas fa-music fa-3x mb-3 text-muted"></i>
-                            <h5 class="text-muted">Tu playlist está vacía</h5>
-                            <p class="text-muted">¡Agrega tu primer video para comenzar!</p>
-                        </div>
+        
+        container.innerHTML = '';
+        
+        videos.forEach(video => {
+            const embedUrl = obtenerEmbedUrl(video.link);
+            const col = document.createElement('div');
+            col.className = 'col-xl-4 col-lg-6 col-md-6';
+            col.innerHTML = `
+                <div class="video-card ${video.favorito ? 'favorito' : ''}">
+                    <div class="embed-container">
+                        <iframe src="${embedUrl}" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
                     </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = '';
-            
-            videos.forEach(video => {
-                const embedUrl = obtenerEmbedUrl(video.link);
-                const col = document.createElement('div');
-                col.className = 'col-xl-4 col-lg-6 col-md-6';
-                col.innerHTML = `
-                    <div class="video-card ${video.favorito ? 'favorito' : ''}">
-                        <div class="embed-container">
-                            <iframe src="${embedUrl}" 
-                                    frameborder="0" 
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                    allowfullscreen>
-                            </iframe>
-                        </div>
-                        <div class="card-body p-4">
-                            <h5 class="card-title mb-3">${video.nombre}</h5>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-favorite btn-icon ${video.favorito ? 'pulse' : ''}" 
-                                            onclick="toggleFavorito('${video.id}')"
-                                            title="${video.favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}">
-                                        <i class="fas fa-star ${video.favorito ? 'text-warning' : 'text-white'}"></i>
-                                    </button>
-                                    <button class="btn btn-delete btn-icon" 
-                                            onclick="eliminarVideo('${video.id}')"
-                                            title="Eliminar video">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                                <div class="d-flex align-items-center gap-3">
-                                    <span class="badge bg-primary px-3 py-2">
-                                        <i class="fas fa-heart me-1"></i> ${video.likes}
-                                    </span>
-                                    <button class="btn btn-like btn-icon" 
-                                            onclick="darLike('${video.id}')"
-                                            title="Dar like">
-                                        <i class="fas fa-thumbs-up"></i>
-                                    </button>
-                                </div>
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-3">${video.nombre}</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-favorite btn-icon ${video.favorito ? 'pulse' : ''}" 
+                                    onclick="toggleFavorito('${video.id}')">
+                                    <i class="fas fa-star ${video.favorito ? 'text-warning' : 'text-white'}"></i>
+                                </button>
+                                <button class="btn btn-delete btn-icon" onclick="eliminarVideo('${video.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="badge bg-primary px-3 py-2">
+                                    <i class="fas fa-heart me-1"></i> ${video.likes}
+                                </span>
+                                <button class="btn btn-like btn-icon" onclick="darLike('${video.id}')">
+                                    <i class="fas fa-thumbs-up"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
-                `;
-                container.appendChild(col);
-            });
-        }
-
-        function actualizarEstadisticas(videos) {
-            const totalVideos = videos.length;
-            const totalLikes = videos.reduce((sum, video) => sum + video.likes, 0);
-            const totalFavorites = videos.filter(video => video.favorito).length;
-            
-            document.getElementById('totalVideos').textContent = totalVideos;
-            document.getElementById('totalLikes').textContent = totalLikes;
-            document.getElementById('totalFavorites').textContent = totalFavorites;
-        }
-
-        function obtenerEmbedUrl(link) {
-            if (!link) return '';
-            
-            if (link.includes('youtube.com/watch?v=')) {
-                const videoId = link.split('v=')[1].split('&')[0];
-                return 'https://www.youtube.com/embed/' + videoId;
-            } else if (link.includes('youtu.be/')) {
-                const videoId = link.split('youtu.be/')[1].split('?')[0];
-                return 'https://www.youtube.com/embed/' + videoId;
-            }
-            return link;
-        }
-
-        // Cargar datos iniciales desde el archivo JSON
-        let playlistData = { videos: [] };
-
-        async function cargarDatosIniciales() {
-            try {
-                const response = await fetch(DATA_FILE);
-                playlistData = await response.json();
-            } catch (error) {
-                console.log('Usando datos vacíos');
-                playlistData = { videos: [] };
-            }
-        }
-
-        document.getElementById('agregarForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<div class="loading"></div>';
-            submitBtn.disabled = true;
-
-            const formData = new FormData(this);
-            const nombre = formData.get('nombre');
-            const link = formData.get('link');
-            
-            try {
-                // Cargar datos actuales
-                await cargarDatosIniciales();
-                
-                const nuevoVideo = {
-                    id: 'video_' + Date.now(),
-                    nombre: nombre,
-                    link: link,
-                    likes: 0,
-                    favorito: false
-                };
-                
-                playlistData.videos.push(nuevoVideo);
-                
-                // En un entorno real, aquí guardarías en el servidor
-                // Por ahora solo en localStorage
-                localStorage.setItem('miPlaylist_backup', JSON.stringify(playlistData.videos));
-                
-                this.reset();
-                mostrarVideos(playlistData.videos);
-                actualizarEstadisticas(playlistData.videos);
-                showToast('Video agregado (cambios en memoria)', 'success');
-            } catch (error) {
-                showToast('Error al agregar video', 'danger');
-            } finally {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }
-        });
-
-        async function eliminarVideo(id) {
-            if (confirm('¿Estás seguro de eliminar este video?')) {
-                try {
-                    await cargarDatosIniciales();
-                    const videoIndex = playlistData.videos.findIndex(video => video.id === id);
-                    
-                    if (videoIndex !== -1) {
-                        playlistData.videos.splice(videoIndex, 1);
-                        localStorage.setItem('miPlaylist_backup', JSON.stringify(playlistData.videos));
-                        mostrarVideos(playlistData.videos);
-                        actualizarEstadisticas(playlistData.videos);
-                        showToast('Video eliminado (cambios en memoria)', 'info');
-                    } else {
-                        showToast('Video no encontrado', 'danger');
-                    }
-                } catch (error) {
-                    showToast('Error al eliminar video', 'danger');
-                }
-            }
-        }
-
-        async function darLike(id) {
-            try {
-                await cargarDatosIniciales();
-                const video = playlistData.videos.find(v => v.id === id);
-                
-                if (video) {
-                    video.likes++;
-                    localStorage.setItem('miPlaylist_backup', JSON.stringify(playlistData.videos));
-                    mostrarVideos(playlistData.videos);
-                    actualizarEstadisticas(playlistData.videos);
-                    showToast('Like agregado!', 'success');
-                } else {
-                    showToast('Video no encontrado', 'danger');
-                }
-            } catch (error) {
-                showToast('Error al dar like', 'danger');
-            }
-        }
-
-        async function toggleFavorito(id) {
-            try {
-                await cargarDatosIniciales();
-                const video = playlistData.videos.find(v => v.id === id);
-                
-                if (video) {
-                    video.favorito = !video.favorito;
-                    localStorage.setItem('miPlaylist_backup', JSON.stringify(playlistData.videos));
-                    mostrarVideos(playlistData.videos);
-                    actualizarEstadisticas(playlistData.videos);
-                } else {
-                    showToast('Video no encontrado', 'danger');
-                }
-            } catch (error) {
-                showToast('Error al marcar como favorito', 'danger');
-            }
-        }
-
-        function createParticle() {
-            const particle = document.createElement('div');
-            particle.style.cssText = `
-                position: fixed;
-                width: 4px;
-                height: 4px;
-                background: var(--primary);
-                border-radius: 50%;
-                pointer-events: none;
-                z-index: -1;
+                </div>
             `;
-            document.body.appendChild(particle);
-            
-            const startX = Math.random() * window.innerWidth;
-            const startY = window.innerHeight + 10;
-            
-            particle.style.left = startX + 'px';
-            particle.style.top = startY + 'px';
-            
-            const animation = particle.animate([
-                { transform: `translateY(0)`, opacity: 1 },
-                { transform: `translateY(-${window.innerHeight + 100}px)`, opacity: 0 }
-            ], {
-                duration: Math.random() * 3000 + 2000,
-                easing: 'cubic-bezier(0.1, 0.2, 0.8, 0.9)'
-            });
-            
-            animation.onfinish = () => particle.remove();
-        }
-        
-        // Inicializar
-        cargarDatosIniciales().then(() => {
-            mostrarVideos(playlistData.videos);
-            actualizarEstadisticas(playlistData.videos);
+            container.appendChild(col);
         });
-        setInterval(createParticle, 800);
-    </script>
+    }
+
+    // =============================
+    //      ESTADÍSTICAS
+    // =============================
+    function actualizarEstadisticas(videos) {
+        document.getElementById('totalVideos').textContent = videos.length;
+        document.getElementById('totalLikes').textContent = videos.reduce((a, v) => a + v.likes, 0);
+        document.getElementById('totalFavorites').textContent = videos.filter(v => v.favorito).length;
+    }
+
+    // =============================
+    //      OBTENER EMBED
+    // =============================
+    function obtenerEmbedUrl(link) {
+        if (!link) return '';
+        
+        if (link.includes('youtube.com/watch?v=')) {
+            const videoId = link.split('v=')[1].split('&')[0];
+            return 'https://www.youtube.com/embed/' + videoId;
+        } else if (link.includes('youtu.be/')) {
+            const videoId = link.split('youtu.be/')[1].split('?')[0];
+            return 'https://www.youtube.com/embed/' + videoId;
+        }
+        return link;
+    }
+
+    // =============================
+    //      AGREGAR VIDEO
+    // =============================
+    document.getElementById('agregarForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const nombre = this.nombre.value;
+        const link = this.link.value;
+
+        try {
+            const response = await fetch(`/playlist?action=agregar&nombre=${encodeURIComponent(nombre)}&link=${encodeURIComponent(link)}`, {
+                method: "POST"
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                showToast("Video agregado!", "success");
+                cargarVideos();
+                this.reset();
+            } else {
+                showToast("Error: " + result.message, "danger");
+            }
+        } catch (error) {
+            showToast("Error agregando video", "danger");
+        }
+    });
+    
+    async function eliminarVideo(id) {
+        if (!confirm("¿Seguro que querés eliminarlo?")) return;
+
+        try {
+            const response = await fetch(`/playlist?action=eliminar&id=${id}`, {
+                method: "POST"
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                showToast("Video eliminado", "info");
+                cargarVideos();
+            } else {
+                showToast("Error: " + result.message, "danger");
+            }
+        } catch (error) {
+            showToast("Error eliminando video", "danger");
+        }
+    }
+
+    // =============================
+    //      DAR LIKE
+    // =============================
+    async function darLike(id) {
+        try {
+            const response = await fetch(`/playlist?action=like&id=${id}`, {
+                method: "POST"
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                cargarVideos();
+            } else {
+                showToast("Error: " + result.message, "danger");
+            }
+        } catch (error) {
+            showToast("Error al dar like", "danger");
+        }
+    }
+
+    // =============================
+    //      FAVORITO
+    // =============================
+    async function toggleFavorito(id) {
+        try {
+            const response = await fetch(`/playlist?action=favorito&id=${id}`, {
+                method: "POST"
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                cargarVideos();
+            } else {
+                showToast("Error: " + result.message, "danger");
+            }
+        } catch (error) {
+            showToast("Error al marcar favorito", "danger");
+        }
+    }
+    </script> 
 </body>
 </html>
