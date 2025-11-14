@@ -13,9 +13,11 @@ public class PlaylistServiceTest {
     
     @Before
     public void setUp() {
+        // 🔥 MUY IMPORTANTE: usar un directorio de datos SOLO PARA TEST
+        System.setProperty("playlist.data.dir", "C:/data-miplaylist-test/");
+        
         playlistService = new PlaylistService();
-        // Eliminar todos los videos existentes antes de cada test
-        eliminarTodosLosVideos();
+        eliminarTodosLosVideos(); // limpia SOLO el JSON de test
     }
     
     private void eliminarTodosLosVideos() {
@@ -64,6 +66,7 @@ public class PlaylistServiceTest {
     
     @Test
     public void testPersistencia() {
+        // service1 y service2 usan el MISMO data-dir de test
         PlaylistService service1 = new PlaylistService();
         eliminarTodosLosVideos(); 
         
