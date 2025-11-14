@@ -121,7 +121,7 @@
     // =============================
     async function cargarVideos() {
         try {
-            const response = await fetch("/playlist");
+            const response = await fetch("playlist");
             const data = await response.json();
 
             // data ES un array directo (tu servlet ya devuelve la lista)
@@ -229,7 +229,7 @@
         const link = this.link.value;
 
         try {
-            const response = await fetch(`/playlist?action=agregar&nombre=${encodeURIComponent(nombre)}&link=${encodeURIComponent(link)}`, {
+            const response = await fetch(`playlist?action=agregar&nombre=${encodeURIComponent(nombre)}&link=${encodeURIComponent(link)}`, {
                 method: "POST"
             });
 
@@ -245,12 +245,12 @@
             showToast("Error agregando video", "danger");
         }
     });
-    
+
     async function eliminarVideo(id) {
         if (!confirm("¿Seguro que querés eliminarlo?")) return;
 
         try {
-            const response = await fetch(`/playlist?action=eliminar&id=${id}`, {
+            const response = await fetch(`playlist?action=eliminar&id=${id}`, {
                 method: "POST"
             });
 
@@ -271,7 +271,7 @@
     // =============================
     async function darLike(id) {
         try {
-            const response = await fetch(`/playlist?action=like&id=${id}`, {
+            const response = await fetch(`playlist?action=like&id=${id}`, {
                 method: "POST"
             });
 
@@ -291,7 +291,7 @@
     // =============================
     async function toggleFavorito(id) {
         try {
-            const response = await fetch(`/playlist?action=favorito&id=${id}`, {
+            const response = await fetch(`playlist?action=favorito&id=${id}`, {
                 method: "POST"
             });
 
