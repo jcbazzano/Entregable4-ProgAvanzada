@@ -13,11 +13,10 @@ public class PlaylistServiceTest {
     
     @Before
     public void setUp() {
-        // 🔥 MUY IMPORTANTE: usar un directorio de datos SOLO PARA TEST
         System.setProperty("playlist.data.dir", "C:/data-miplaylist-test/");
         
         playlistService = new PlaylistService();
-        eliminarTodosLosVideos(); // limpia SOLO el JSON de test
+        eliminarTodosLosVideos(); 
     }
     
     private void eliminarTodosLosVideos() {
