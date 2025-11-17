@@ -17,7 +17,7 @@
 
 body {
     font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(135deg, #dc2626, #7c2d12);
+    background: linear-gradient(135deg, var(--darker), var(--dark));
     color: var(--light);
     min-height: 100vh;
     background-attachment: fixed;
@@ -93,7 +93,7 @@ body {
 }
 
 .video-card.favorito {
-    border: 2px solid #fbff00;
+    border: 2px solid #fbbf24;
     box-shadow: 0 15px 30px rgba(251, 191, 36, 0.3);
 }
 
