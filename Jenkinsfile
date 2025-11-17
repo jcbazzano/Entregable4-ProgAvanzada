@@ -48,7 +48,14 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo "🚀 Desplegando aplicación..."
-                bat 'deploy_windows.bat'
+                script {
+                    if (isUnix()) {
+                        sh 'chmod +x deploy_mac.sh'
+                        sh './deploy_mac.sh'
+                    } else {
+                        bat 'deploy_windows.bat'
+                    }
+                }
             }
         }
     }
