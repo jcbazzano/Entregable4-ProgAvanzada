@@ -6,7 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(ignoreUnknown = true)  // ← Agregar esta anotación
+@JsonIgnoreProperties(ignoreUnknown = true)  
 public class Playlist {
     private final List<Video> videos;
     
@@ -33,7 +33,7 @@ public class Playlist {
         return new ArrayList<>(videos);
     }
     
-    public void setVideos(List<Video> videos) {  // ← Agregar setter para deserialización
+    public void setVideos(List<Video> videos) {  
         if (videos != null) {
             this.videos.clear();
             this.videos.addAll(videos);

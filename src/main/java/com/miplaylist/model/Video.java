@@ -2,7 +2,7 @@ package com.miplaylist.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(ignoreUnknown = true)  // ← Agregar esta anotación
+@JsonIgnoreProperties(ignoreUnknown = true) 
 public class Video {
     private String id;
     private String nombre;
