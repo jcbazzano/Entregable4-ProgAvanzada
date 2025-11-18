@@ -262,27 +262,41 @@ body {
 .filter-container {
     display: flex;
     justify-content: center;
-    gap: 1rem;
+    gap: 1.5rem;
     margin-bottom: 2rem;
+    flex-wrap: wrap;
 }
 
 .filter-btn {
-    background: var(--card-bg);
-    border: 1px solid var(--glass);
-    color: var(--light);
-    padding: 10px 25px;
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+    padding: 12px 25px;
     border-radius: 50px;
-    font-weight: 500;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 8px;
+    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
 }
 
 .filter-btn:hover, .filter-btn.active {
     background: var(--primary-gradient);
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.6);
+    color: white;
+}
+
+.filter-btn:not(.active) {
+    background: var(--card-bg);
+    border: 1px solid var(--glass);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.filter-btn:not(.active):hover {
+    background: var(--primary-gradient);
 }
 
 .empty-state {
