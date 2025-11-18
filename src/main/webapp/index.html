@@ -268,14 +268,12 @@
             transform: scale(1.1) rotate(90deg);
         }
 
-        /* Nuevos estilos para filtros */
         .filter-container {
             display: flex;
             justify-content: center;
             gap: 1.5rem;
-            margin-bottom: 4rem;
+            margin-bottom: 2rem;
             flex-wrap: wrap;
-            padding-bottom: 1rem;
         }
 
         .filter-btn {
@@ -581,8 +579,12 @@
         const link = this.link.value;
 
         try {
-            const response = await fetch(`playlist?action=agregar&nombre=${encodeURIComponent(nombre)}&link=${encodeURIComponent(link)}`, {
-                method: "POST"
+            const response = await fetch(`playlist/agregar`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `nombre=${encodeURIComponent(nombre)}&link=${encodeURIComponent(link)}`
             });
 
             const result = await response.json();
@@ -602,8 +604,12 @@
         if (!confirm("¿Seguro que querés eliminarlo?")) return;
 
         try {
-            const response = await fetch(`playlist?action=eliminar&id=${id}`, {
-                method: "POST"
+            const response = await fetch(`playlist/eliminar`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${id}`
             });
 
             const result = await response.json();
@@ -620,8 +626,12 @@
 
     async function darLike(id) {
         try {
-            const response = await fetch(`playlist?action=like&id=${id}`, {
-                method: "POST"
+            const response = await fetch(`playlist/like`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${id}`
             });
 
             const result = await response.json();
@@ -637,8 +647,12 @@
 
     async function toggleFavorito(id) {
         try {
-            const response = await fetch(`playlist?action=favorito&id=${id}`, {
-                method: "POST"
+            const response = await fetch(`playlist/favorito`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${id}`
             });
 
             const result = await response.json();
