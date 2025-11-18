@@ -65,6 +65,17 @@
                 </div>
             </form>
         </div>
+
+        <!-- Filtros -->
+        <div class="filter-container">
+            <button class="filter-btn active" data-filter="all">
+                <i class="fas fa-list"></i> Todos los videos
+            </button>
+            <button class="filter-btn" data-filter="favorites">
+                <i class="fas fa-star"></i> Solo favoritos
+            </button>
+        </div>
+
         <div id="videosContainer" class="row">
             <div class="col-12 text-center">
                 <div class="p-5">
@@ -80,7 +91,23 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         cargarVideos();
+        
+        // Agregar event listeners para los filtros
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remover clase active de todos los botones
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                // Agregar clase active al botón clickeado
+                this.classList.add('active');
+                
+                // Filtrar videos
+                const filter = this.getAttribute('data-filter');
+                filtrarVideos(filter);
+            });
+        });
     });
+
+    let allVideos = []; // Variable para almacenar todos los videos
 
     function showToast(message, type = 'info') {
         const toastContainer = document.querySelector('.toast-container');
@@ -118,6 +145,7 @@
             const response = await fetch("playlist");
             const data = await response.json();
 
+            allVideos = data; // Guardar todos los videos
             mostrarVideos(data);
             actualizarEstadisticas(data);
 
@@ -131,9 +159,9 @@
         
         if (!videos || videos.length === 0) {
             container.innerHTML = `
-                <div class="col-12 text-center">
-                    <div class="p-5">
-                        <i class="fas fa-music fa-3x mb-3 text-muted"></i>
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="fas fa-music"></i>
                         <h5 class="text-muted">Tu playlist está vacía</h5>
                         <p class="text-muted">¡Agrega tu primer video para comenzar!</p>
                     </div>
@@ -182,6 +210,24 @@
             `;
             container.appendChild(col);
         });
+        
+        // Mostrar contador de videos
+        const videoCount = document.createElement('div');
+        videoCount.className = 'col-12 text-center video-count';
+        videoCount.textContent = `Mostrando ${videos.length} de ${allVideos.length} videos`;
+        container.appendChild(videoCount);
+    }
+
+    function filtrarVideos(filter) {
+        let videosFiltrados = [];
+        
+        if (filter === 'all') {
+            videosFiltrados = allVideos;
+        } else if (filter === 'favorites') {
+            videosFiltrados = allVideos.filter(video => video.favorito);
+        }
+        
+        mostrarVideos(videosFiltrados);
     }
 
     function actualizarEstadisticas(videos) {
